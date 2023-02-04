@@ -8,48 +8,48 @@ import { useState } from 'react';
 // * Não é permitido usar refs
 //
 // Tarefas:
-// - O botão de login deve disparar a função login(), importada no topo deste arquivo, e passar os dados necessários.
 // - Desabilite o botão de Login caso o e-mail esteja em branco OU a senha for menor que 6 dígitos.
+// - O botão de login deve disparar a função login(), importada no topo deste arquivo, e passar os dados necessários.
 // - Desabilite o botão de Login equanto você está executando o login.
 // - Mostre uma mensagem de erro de login() caso o Login falhe. A mensagem deve ser limpa a cada nova tentativa de Login.
 // - Mostre um alerta caso o login seja efetuado com sucesso (javascript alert). Investigue a função login() para entender como ter sucesso na requisição.
 
 export default function LoginForm() {
     
-  
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState(null);
+  const [user, setUser] = useState({email: '', password: ''});
+  const [error, setError] = useState('');
   const [isRequesting, setIsRequesting] = useState(false);
-
+  
   const handleEmail = (e) => {
-    setEmail(e.target.value);
-  } 
+    setUser((prev => ({ ...prev, email: e.target.value })));
+  }
 
   const handlePassword = (e) => {
-    setPassword(e.target.value)
+    setUser((prev => ({ ...prev, password: e.target.value })));
   }
-  
-  const handleSubmit = () => {
 
-    setError(null);
+  const handleButton = () => {
     setIsRequesting(true);
-    const values = {email, password}
+    setError('');
 
-    login(values).then(() => {
-
-      alert('Login feito com sucesso!');
+    login({
+      email: user.email,
+      password: user.password
+    }).then(() => {
+      alert('Login realizado com sucesso!');
 
     }).catch((error) => {
       setError(error);
 
+      setError(error);
     }).finally(() => {
       setIsRequesting(false);
-    });
-    
+      setUser({
+        password: ''
+      })
+    }) 
   }
-
-
+  
 
 
   return (
@@ -60,16 +60,16 @@ export default function LoginForm() {
         {error && <div className='errorMessage'>{error.message}</div>}
         <div className='row'>
           <label htmlFor={'email'}>Email</label>
-          <input id={'email'} type={'email'} autoComplete='off' value={email} onChange={handleEmail}/>
+          <input id={'email'} type={'email'} autoComplete='off' value={user.email} onChange={handleEmail} />
         </div>
         <div className='row'>
           <label htmlFor={'password'}>Password</label>
-          <input id={'password'} type={'password'} value={password} onChange={handlePassword} />
+          <input id={'password'} type={'password'} value={user.password} onChange={handlePassword}/>
         </div>
 
         
         <div className='button'>
-          <button onClick={handleSubmit} disabled={email === '' || password.length < 6 || isRequesting}>Login</button>
+          <button onClick={handleButton} disabled={isRequesting || user.email === '' || user.password.length < 6} >Login</button>
         </div>
        
       </div>
